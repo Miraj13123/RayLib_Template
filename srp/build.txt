@@ -3,11 +3,11 @@ version:17
 compilePathWindows:binW
 compilePathLinux:binL
 exactPaths:enable
-createObjects:enable
+createObjects:disable
 
-include_paths:
-library_paths:
-libraries:
+include_paths:-I"D:\INVENTORY\code\gnu\lib\raygui-4.0\src" -I"D:\INVENTORY\code\gnu\lib\raylib-5.5_win64_mingw-w64\include"
+library_paths:-L"D:\INVENTORY\code\gnu\lib\raylib-5.5_win64_mingw-w64\lib"
+libraries:-lraylib -lopengl32 -lgdi32 -lwinmm -lstdc++exp
 target_triple:
 extra_flags:
 
