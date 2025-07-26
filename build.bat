@@ -1,4 +1,5 @@
 @echo off
+cls
 setlocal EnableDelayedExpansion
 
 :: only created and specially set to work // these are not defaults //
