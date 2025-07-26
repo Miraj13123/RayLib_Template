@@ -1,5 +1,0 @@
-include_paths:-I!rayguiInclude! -I!raylibInclude!
-library_paths:-L!raylibLibrary!
-libraries:-lraylib -lopengl32 -lgdi32 -lwinmm -lstdc++exp -mwindows
-
-
