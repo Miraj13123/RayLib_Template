@@ -1,3 +1,0 @@
-D:/INVENTORY/codx/cpp/.github/RayLib_Template/bin/CMakeFiles/app.dir
-D:/INVENTORY/codx/cpp/.github/RayLib_Template/bin/CMakeFiles/edit_cache.dir
-D:/INVENTORY/codx/cpp/.github/RayLib_Template/bin/CMakeFiles/rebuild_cache.dir
