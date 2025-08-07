@@ -1,6 +1,11 @@
 # Setting a minimum version of CMake
 cmake_minimum_required(VERSION 3.5...4.0)
 
+# Set default C++ compiler to g++ for MinGW if not specified
+if(MINGW AND NOT CMAKE_CXX_COMPILER)
+    set(CMAKE_CXX_COMPILER "g++")
+endif()
+
 # Project name "Calculator", Language "CXX" means C++
 project(Calculator LANGUAGES CXX)
 
@@ -33,70 +38,12 @@ set(LIB_DIR "${CMAKE_SOURCE_DIR}/lib")
 set(RAYLIB_DIR "${LIB_DIR}/raylib-5.5_win64_mingw-w64")
 set(RAYGUI_DIR "${LIB_DIR}/raygui-4.0")
 
-# Option to trigger dependency download
-option(DEPENDENCY_UPDATE "Download and extract raylib and raygui if missing" OFF)
-
-# Download and extract dependencies only if DEPENDENCY_UPDATE is ON and directories are missing
-if(DEPENDENCY_UPDATE)
-    file(MAKE_DIRECTORY "${LIB_DIR}")
-
-    # Download and extract raylib if not present
-    if(NOT EXISTS "${RAYLIB_DIR}")
-        file(DOWNLOAD
-            "https://github.com/raysan5/raylib/releases/download/5.5/raylib-5.5_win64_mingw-w64.zip"
-            "${LIB_DIR}/raylib-5.5_win64_mingw-w64.zip"
-            SHOW_PROGRESS
-            STATUS DOWNLOAD_STATUS
-        )
-        list(GET DOWNLOAD_STATUS 0 STATUS_CODE)
-        if(NOT STATUS_CODE EQUAL 0)
-            message(FATAL_ERROR "Failed to download raylib: ${DOWNLOAD_STATUS}")
-        endif()
-        execute_process(
-            COMMAND ${CMAKE_COMMAND} -E tar xzf "${LIB_DIR}/raylib-5.5_win64_mingw-w64.zip"
-            WORKING_DIRECTORY "${LIB_DIR}"
-            RESULT_VARIABLE EXTRACT_RESULT
-        )
-        if(NOT EXTRACT_RESULT EQUAL 0)
-            message(FATAL_ERROR "Failed to extract raylib")
-        endif()
-        file(REMOVE "${LIB_DIR}/raylib-5.5_win64_mingw-w64.zip")
-    endif()
-
-    # Download and extract raygui if not present
-    if(NOT EXISTS "${RAYGUI_DIR}")
-        file(DOWNLOAD
-            "https://github.com/raysan5/raygui/archive/refs/tags/4.0.zip"
-            "${LIB_DIR}/raygui-4.0.zip"
-            SHOW_PROGRESS
-            STATUS DOWNLOAD_STATUS
-        )
-        list(GET DOWNLOAD_STATUS 0 STATUS_CODE)
-        if(NOT STATUS_CODE EQUAL 0)
-            message(FATAL_ERROR "Failed to download raygui: ${DOWNLOAD_STATUS}")
-        endif()
-        execute_process(
-            COMMAND ${CMAKE_COMMAND} -E tar xzf "${LIB_DIR}/raygui-4.0.zip"
-            WORKING_DIRECTORY "${LIB_DIR}"
-            RESULT_VARIABLE EXTRACT_RESULT
-        )
-        if(NOT EXTRACT_RESULT EQUAL 0)
-            message(FATAL_ERROR "Failed to extract raygui")
-        endif()
-        file(REMOVE "${LIB_DIR}/raygui-4.0.zip")
-    endif()
-endif()
-
-# Verify that required library directories exist
-if(NOT EXISTS "${RAYLIB_DIR}/include/raylib.h")
-    message(FATAL_ERROR "raylib headers not found in ${RAYLIB_DIR}/include. Please run 'cmake -DDEPENDENCY_UPDATE=ON' to download dependencies.")
-endif()
-if(NOT EXISTS "${RAYLIB_DIR}/lib/libraylib.a")
-    message(FATAL_ERROR "raylib library not found in ${RAYLIB_DIR}/lib. Please run 'cmake -DDEPENDENCY_UPDATE=ON' to download dependencies.")
-endif()
-if(NOT EXISTS "${RAYGUI_DIR}/src/raygui.h")
-    message(FATAL_ERROR "raygui headers not found in ${RAYGUI_DIR}/src. Please run 'cmake -DDEPENDENCY_UPDATE=ON' to download dependencies.")
-endif()
+# Custom target to download dependencies
+add_custom_target(updateDependency
+    COMMAND ${CMAKE_COMMAND} -P "${CMAKE_SOURCE_DIR}/updateDependency.cmake"
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+    COMMENT "Updating raylib and raygui dependencies..."
+)
 
 # Create an interface library for external dependencies
 add_library(ExternalLibrary INTERFACE)
@@ -113,3 +60,6 @@ target_link_libraries(ExternalLibrary INTERFACE
 
 # Link the app to ExternalLibrary
 target_link_libraries(app PRIVATE ExternalLibrary)
+
+# Optional: Ensure update_dependencies runs before app
+# add_dependencies(app update_dependencies)

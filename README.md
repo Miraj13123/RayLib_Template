@@ -1,11 +1,16 @@
-## to make cmake cach (without downloading lib)
+## to make cmake cache
+```bash
 cmake -S . -B bin -G "MinGW Makefiles" -DCMAKE_CXX_COMPILER=g++
+```
 
-## to download dependency
-cmake -S . -B bin -G "MinGW Makefiles" -DCMAKE_CXX_COMPILER=g++ -DDEPENDENCY_UPDATE=ON
-
-## to build
+## Build Phase
+```bash
 cmake --build bin
+```
+### if librariesaren't downloaded
+```bash
+cmake --build bin --target updateDependency
+```
 
 ## to run:
 ```
